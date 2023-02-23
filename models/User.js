@@ -21,14 +21,14 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please add a password"],
     minLength: 6,
-    select: false
-  }
+    select: false,
+  },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
   createAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model("User", UserSchema);
