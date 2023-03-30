@@ -1,5 +1,7 @@
 const Hospital = require("../models/Hospital");
 
+const vacCenter = require("../models/VacCenter");
+
 //@desc Get all hospitals
 //@route GET /api/v1/hospitals
 //@access Public
@@ -23,7 +25,7 @@ exports.getHospitals = async (req, res, next) => {
   queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, (match) => `$${match}`);
 
   // Finding resource
-  query = Hospital.find(JSON.parse(queryStr));
+  query = Hospital.find(JSON.parse(queryStr)).populate("appointments");
 
   // Select Fields
   if (req.query.select) {
@@ -83,7 +85,6 @@ exports.getHospitals = async (req, res, next) => {
 //@route GET /api/v1/hospitals/:id
 //@access Public
 exports.getHospital = async (req, res, next) => {
-  console.log(req.params.id);
   try {
     const hospital = await Hospital.findById(req.params.id);
 
@@ -92,7 +93,7 @@ exports.getHospital = async (req, res, next) => {
     }
 
     res.status(200).json({ success: true, data: hospital });
-  } catch (err) {
+  } catch {
     res.status(400).json({ success: false });
   }
 };
@@ -120,7 +121,7 @@ exports.updateHospital = async (req, res, next) => {
     }
 
     res.status(200).json({ success: true, data: hospital });
-  } catch (err) {
+  } catch {
     res.status(400).json({ success: false });
   }
 };
@@ -130,14 +131,31 @@ exports.updateHospital = async (req, res, next) => {
 //@access Private
 exports.deleteHospital = async (req, res, next) => {
   try {
-    const hospital = await Hospital.findByIdAndDelete(req.params.id);
+    const hospital = await Hospital.findById(req.params.id);
 
     if (!hospital) {
-      return res.status(400).json({ success: false });
+      return res.status(400).json({
+        success: false,
+        message: `Bootcamp not found with id of ${req.params.id}`,
+      });
     }
 
+    hospital.remove();
     res.status(200).json({ success: true, data: {} });
-  } catch (err) {
+  } catch {
     res.status(400).json({ success: false });
   }
+};
+
+// @desc Get vaccine centers
+// @route GET /api/v1/hospitals/vacCenters
+// @access Public
+exports.getVacCenters = async (req, res, next) => {
+  vacCenter.getAll((err, data) => {
+    if (err) {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving vacCenters.",
+      });
+    } else res.send(data);
+  });
 };
