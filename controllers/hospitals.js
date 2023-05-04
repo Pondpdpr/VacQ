@@ -16,7 +16,6 @@ exports.getHospitals = async (req, res, next) => {
 
   // Loop over removeFields and delete them from reqQuery
   removeFields.forEach((param) => delete reqQuery[param]);
-  console.log(reqQuery);
 
   // Create query string
   let queryStr = JSON.stringify(reqQuery);
@@ -77,6 +76,7 @@ exports.getHospitals = async (req, res, next) => {
       data: hospitals,
     });
   } catch (err) {
+    console.log(err.message);
     res.status(400).json({ success: false });
   }
 };
@@ -103,7 +103,7 @@ exports.getHospital = async (req, res, next) => {
 //@access Private
 exports.createHospital = async (req, res, next) => {
   const hospital = await Hospital.create(req.body);
-  res.status(200).json({ success: true, data: hospital });
+  res.status(201).json({ success: true, data: hospital });
 };
 
 //@desc Update hospital
